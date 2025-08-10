@@ -326,7 +326,8 @@ public class PyjinnScript {
           "take_item",
           "damage",
           "chunk",
-          "world");
+          "world",
+          "sound");
 
   public static class AddEventListener implements Script.Function {
     @Override
