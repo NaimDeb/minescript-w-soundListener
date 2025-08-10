@@ -4,10 +4,8 @@
 package net.minescript.common.dataclasses;
 
 import java.util.OptionalInt;
-import net.minecraft.nbt.Tag;
-import net.minecraft.util.ProblemReporter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.TagValueOutput;
 import net.minescript.common.Jsonable;
 
 public class ItemStackData extends Jsonable {
@@ -26,10 +24,8 @@ public class ItemStackData extends Jsonable {
     if (itemStack.getCount() == 0) {
       return null;
     } else {
-      var reporter = new ProblemReporter.Collector();
-      var nbtOutput = TagValueOutput.createWithoutContext(reporter);
-      nbtOutput.store("minescript_item_wrapper", ItemStack.CODEC, itemStack);
-      Tag nbt = nbtOutput.buildResult().get("minescript_item_wrapper");
+      var minecraft = Minecraft.getInstance();
+      var nbt = itemStack.save(minecraft.level.registryAccess());
 
       var out = new ItemStackData(itemStack.getItem().toString(), itemStack.getCount());
       if (nbt != null) {

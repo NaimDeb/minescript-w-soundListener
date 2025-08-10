@@ -173,7 +173,7 @@ public class Minescript {
         !Minecraft.class.getName().equals("net.minecraft.client.Minecraft");
     mappingsLoader =
         new MappingsLoader(
-            SharedConstants.getCurrentVersion().name(),
+            SharedConstants.getCurrentVersion().getName(),
             platform.modLoaderName(),
             isMinecraftClassObfuscated);
     try {
@@ -2761,7 +2761,7 @@ public class Minescript {
           args.expectSize(0);
 
           var result = new VersionInfo();
-          result.minecraft = SharedConstants.getCurrentVersion().name();
+          result.minecraft = SharedConstants.getCurrentVersion().getName();
           result.minescript = Minescript.version;
           result.mod_loader = platform.modLoaderName();
           result.launcher = minecraft.getLaunchedVersion();
@@ -2820,7 +2820,6 @@ public class Minescript {
               minecraft.gameDirectory,
               filename,
               minecraft.getMainRenderTarget(),
-              /* downScale= */ 1,
               message -> job.log(message.getString()));
           return ScriptValue.TRUE;
         }

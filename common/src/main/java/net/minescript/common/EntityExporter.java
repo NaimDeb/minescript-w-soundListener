@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.commands.data.EntityDataAccessor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minescript.common.dataclasses.EntityData;
@@ -155,9 +154,8 @@ public class EntityExporter {
     }
 
     if (includeNbt) {
-      var dataAccessor = new EntityDataAccessor(entity);
-      CompoundTag nbt = dataAccessor.getData();
-      entityData.nbt = nbt.toString();
+      var nbt = new CompoundTag();
+      entityData.nbt = entity.saveWithoutId(nbt).toString();
     }
 
     return entityData;
