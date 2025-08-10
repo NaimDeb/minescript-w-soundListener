@@ -71,6 +71,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -2001,6 +2003,7 @@ public class Minescript {
   private static EventDispatcher explosionEventListeners = new EventDispatcher();
   private static EventDispatcher chunkEventListeners = new EventDispatcher();
   private static EventDispatcher worldListeners = new EventDispatcher();
+  private static EventDispatcher soundEventListeners = new EventDispatcher();
 
   private static ImmutableList<EventDispatcher> eventDispatchers =
       ImmutableList.of(
@@ -2016,7 +2019,8 @@ public class Minescript {
           damageEventListeners,
           explosionEventListeners,
           chunkEventListeners,
-          worldListeners);
+          worldListeners,
+          soundEventListeners);
 
   /** Returns the event dispatcher for the given event name, or {@code null}. */
   static EventDispatcher getDispatcherForEventName(String eventName) throws Exception {
@@ -2034,6 +2038,7 @@ public class Minescript {
       case "explosion" -> explosionEventListeners;
       case "chunk" -> chunkEventListeners;
       case "world" -> worldListeners;
+      case "sound" -> soundEventListeners;
       default -> null;
     };
   }
@@ -2175,6 +2180,29 @@ public class Minescript {
 
           event.blockpack_base64 = encodedBlockpack;
           event.time = System.currentTimeMillis() / 1000.;
+          eventValue = ScriptValue.of(event);
+        }
+        handler.respond(eventValue);
+      }
+    }
+  }
+
+  public static void onSoundEvent(Holder<net.minecraft.sounds.SoundEvent> sound,double x, double y, double z, float volume, float pitch, SoundSource source) {
+    ScriptValue eventValue = null;
+    for (var handler : soundEventListeners.values()) {
+      if (handler.isActive()) {
+        if (eventValue == null) {
+          var event = new SoundEvent();
+          event.sound = sound.unwrapKey()
+                   .map(key -> key.location().toString())
+                   .orElse("unknown_sound");
+          event.position[0] = x;
+          event.position[1] = y;
+          event.position[2] = z;
+          event.volume = volume;
+          event.pitch = pitch;
+          event.time = System.currentTimeMillis() / 1000.;
+          event.source = source.toString();
           eventValue = ScriptValue.of(event);
         }
         handler.respond(eventValue);
