@@ -11,6 +11,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundDamageEventPacket;
 import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.network.protocol.game.ClientboundTakeItemEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minescript.common.Minescript;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,6 +118,20 @@ public abstract class ClientPacketListenerMixin {
     }
     // 1.21.2+ dropped support for packet.getToBlow() in ClientboundExplodePacket.
     Minescript.onExplosionEvent(packet.center().x, packet.center().y, packet.center().z, List.of());
+  }
+
+  // Sound packets
+  @Inject(
+    at = @At("HEAD"),
+    method = "handleSoundEvent(Lnet/minecraft/network/protocol/game/ClientboundSoundPacket;)V",
+    cancellable = false)
+  private void handleSoundEvent(ClientboundSoundPacket packet, CallbackInfo ci) {
+    var minecraft = Minecraft.getInstance();
+    if (!minecraft.isSameThread()) {
+      return;
+    }
+    Minescript.onSoundEvent(packet.getSound(), packet.getX(), packet.getY(), packet.getZ(),
+        packet.getVolume(), packet.getPitch(), packet.getSource());
   }
 
   // TODO(maxuser): How to trigger this event?
