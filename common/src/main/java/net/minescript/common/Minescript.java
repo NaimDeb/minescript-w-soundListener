@@ -91,6 +91,7 @@ import net.minescript.common.mappings.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.pyjinn.interpreter.Script;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class Minescript {
   private static final Logger LOGGER = LogManager.getLogger();
@@ -2187,15 +2188,18 @@ public class Minescript {
     }
   }
 
-  public static void onSoundEvent(Holder<net.minecraft.sounds.SoundEvent> sound,double x, double y, double z, float volume, float pitch, SoundSource source) {
+  public static void onSoundEvent(Holder<net.minecraft.sounds.SoundEvent> sound,
+                                  double x, double y, double z,
+                                  float volume,
+                                  float pitch,
+                                  SoundSource source) {
     ScriptValue eventValue = null;
     for (var handler : soundEventListeners.values()) {
       if (handler.isActive()) {
         if (eventValue == null) {
           var event = new SoundEvent();
-          event.sound = sound.unwrapKey()
-                   .map(key -> key.location().toString())
-                   .orElse("unknown_sound");
+          var key = BuiltInRegistries.SOUND_EVENT.getKey(sound.value());
+          event.sound = (key != null) ? key.toString() : sound.value().toString();
           event.position[0] = x;
           event.position[1] = y;
           event.position[2] = z;
