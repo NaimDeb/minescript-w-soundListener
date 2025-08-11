@@ -2199,7 +2199,7 @@ public class Minescript {
         if (eventValue == null) {
           var event = new SoundEvent();
           var key = BuiltInRegistries.SOUND_EVENT.getKey(sound.value());
-          event.sound = (key != null) ? key.toString() : sound.value().toString();
+          event.sound = (key != null) ? key.toString() : sound.value().location().toString();
           event.position[0] = x;
           event.position[1] = y;
           event.position[2] = z;
